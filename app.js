@@ -23,7 +23,7 @@ const reviewRoutes = require('./routes/reviews');
 
 const MongoStore = require('connect-mongo')(session);
 
-const dbUrl = 'mongodb://localhost:27017/yelp-camp';
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -46,9 +46,11 @@ app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(mongoSanitize());
 
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!'
+
 const store = new MongoStore({
     url: dbUrl,
-    secret: 'thisshouldbeabettersecret!',
+    secret,
     touchAfter: 24 * 60 * 60
 })
 
@@ -59,7 +61,7 @@ store.on("error", function (e) {
 const sessionConfig = {
     store,
     name: 'session',
-    secret: 'thisshouldbeabettersecret!',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -88,6 +90,7 @@ const styleSrcUrls = [
     "https://api.tiles.mapbox.com",
     "https://fonts.googleapis.com",
     "https://use.fontawesome.com",
+    "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
 ];
 const connectSrcUrls = [
     "https://api.mapbox.com",
